@@ -40,11 +40,15 @@ export const register = async (req, res) => {
         const salt = await bcrypt.genSalt(12)
         const hashPassword = await bcrypt.hash(password, salt)
 
+        const status = "Non active"
+        const role = 2
+
         const regist = await User.create({
             username,
             email,
             password: hashPassword,
-            role_id: 3
+            status,
+            role_id: role
         })
         res.status(201).json({
             status: "Success",
@@ -72,17 +76,24 @@ export const login = async (req, res) => {
                 email: req.body.email
             }
         })
+
         const match = await bcrypt.compare(req.body.password, user.password)
         if (!match) {
             return res.status(400).json({ message: "Wrong Password" })
         }
 
+        const checkStatus = "Actived"
+        if (user.status !== checkStatus) {
+            return res.status(400).json({ message: "Your account is not active" })
+        }
+
         const userId = user.uuid
         const username = user.username
         const email = user.email
+        const role = user.role_id
 
-        const accessToken = jwt.sign({ userId, username, email }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1h' })
-        const refreshToken = jwt.sign({ userId, username, email }, process.env.REFRESH_TOKEN_SECRET, { expiresIn: '1d' })
+        const accessToken = jwt.sign({ userId, username, email, role }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1h' })
+        const refreshToken = jwt.sign({ userId, username, email, role }, process.env.REFRESH_TOKEN_SECRET, { expiresIn: '1d' })
 
         await User.update({ refresh_token: refreshToken }, {
             where: {
@@ -195,7 +206,7 @@ export const logout = async (req, res) => {
         res.clearCookie('refreshToken')
         return res.status(200).json({
             status: "Success",
-            message: `${username} logged out successfully`
+            message: `${username} has logged out`
         })
     } catch (error) {
         console.log(error)

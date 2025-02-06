@@ -14,7 +14,7 @@ export const verifyToken = async (req, res, next) => {
         if (err) {
             return res.status(403).json({ message: "No access token" })
         }
-        req.email = decoded.email
+        req.user = { email: decoded.email, role: decoded.role }
         next()
     })
 }

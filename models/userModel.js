@@ -38,6 +38,13 @@ const User = db.define('users', {
             notEmpty: true
         }
     },
+    status: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        validate: {
+            notEmpty: true
+        }
+    },
     refresh_token: {
         type: DataTypes.STRING
     }

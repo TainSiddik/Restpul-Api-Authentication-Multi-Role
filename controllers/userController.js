@@ -11,7 +11,7 @@ export const getAllUsers = async (req, res) => {
                 as: 'role',
                 attributes: ['role']
             },
-            attributes: ["uuid", "username", "email"]
+            attributes: ["uuid", "username", "email", "status"]
         })
         if (users.length === 0) {
             return res.status(200).json({ message: "no user registered" })
@@ -57,8 +57,8 @@ export const getDataUser = async (req, res) => {
     }
 }
 
-// Edit User role
-export const editUser = async (req, res) => {
+// Edit User access
+export const editUserAccess = async (req, res) => {
     try {
         const uuid = req.params.uuid
         const user = await User.findOne({
@@ -67,12 +67,13 @@ export const editUser = async (req, res) => {
             },
         })
         if (!user) return res.status(404).json({ message: "user not found" })
+        const status = req.body.status
         const role = req.body.role
         const username = user.username
-        await user.update({ role_id: role })
+        await user.update({ status: status, role_id: role })
         res.status(200).json({
             status: "Success",
-            message: `${username} role has changed`,
+            message: `${username} access has changed`,
         })
     } catch (error) {
         res.status(500).json({
