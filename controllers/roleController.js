@@ -53,6 +53,17 @@ export const addRole = async (req, res) => {
         if (!role) {
             return res.status(400).json({ message: "Role has required" })
         }
+        const checkRole = await Role.findOne({
+            where: {
+                role: role
+            }
+        })
+        if (checkRole) {
+            return res.status(400).json({
+                status: "Failed",
+                message: "The role already exists"
+            })
+        }
         const add = await Role.create({
             role: role
         })
