@@ -40,7 +40,7 @@ export const getDataUser = async (req, res) => {
                 as: 'role',
                 attributes: ['role']
             },
-            attributes: ["uuid", "username", "email"]
+            attributes: ["uuid", "username", "email", "status"]
         })
         if (!user) return res.status(404).json({ message: "user not found" })
         res.status(200).json({
